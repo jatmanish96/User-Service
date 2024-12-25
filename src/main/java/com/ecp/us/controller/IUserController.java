@@ -19,4 +19,5 @@ public interface IUserController {
 
     @PostMapping("/auth/login")
     ResponseEntity<?> userLogin(@RequestBody LoginRequest loginRequest);
+
  }

@@ -1,8 +1,10 @@
 package com.ecp.us.models;
 
-import com.ecp.us.utils.PasswordUtils;
+
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.Set;
@@ -10,6 +12,8 @@ import java.util.Set;
 @Entity
 @Table(name="users")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
     @Id
@@ -41,7 +45,7 @@ public class User {
     private String address;
 
     @Column
-    private boolean active;
+    private Boolean active;
 
     @Column(name = "created_at",updatable = false)
     private Date createdAt;

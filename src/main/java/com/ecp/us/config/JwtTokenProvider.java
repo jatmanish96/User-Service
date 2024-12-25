@@ -21,7 +21,7 @@ public class JwtTokenProvider {
         return Jwts.builder().issuer("ecp").subject("JWT Token").claim("username", authentication.getName())
                 .claim("authorities", authentication.getAuthorities().stream().map(
                         GrantedAuthority::getAuthority
-                ).collect(Collectors.joining(","))).issuedAt(new Date()).expiration(new Date((new Date()).getTime() + 30000000))
+                ).collect(Collectors.joining(","))).issuedAt(new Date()).expiration(new Date((new Date()).getTime() + 600000))
                     .signWith(secretKey).compact();
     }
 }

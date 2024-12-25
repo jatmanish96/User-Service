@@ -34,11 +34,12 @@ public class JwtTokenValidator extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
+        logger.info("JwtTokenValidator class filter method token :{}",request.getHeader(UserConstants.JWT_HEADER));
         String token =  request.getHeader(UserConstants.JWT_HEADER);
         if(null!=token){
             try{
-                    String jwt = token.startsWith("Bearer ")? token.substring(0,7):null;
+                    String jwt = token.startsWith("Bearer ")? token.substring(7):null;
+                    logger.info("JwtTokenValidator class filter method token-2 :{}",jwt);
                     String secretKey = UserConstants.JWT_SECRET_KEY;
                     SecretKey secret = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
                     Claims claims = Jwts.parser().verifyWith(secret).build().parseSignedClaims(jwt).getPayload();

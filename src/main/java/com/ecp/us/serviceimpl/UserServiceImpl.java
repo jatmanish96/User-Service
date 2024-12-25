@@ -26,6 +26,7 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import java.net.URI;
 import java.util.HashSet;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
@@ -53,10 +54,21 @@ public class UserServiceImpl implements IUserService {
     @Override
     public ResponseEntity<UserDto> get(Long id) {
         logger.info("User Service class get method id : {}",id);
-        Optional<User> user= userRepository.findById(id);
-        UserDto userDto = objectMapper.convertValue(user.get(),UserDto.class);
-        return  ResponseEntity.ok().body(userDto);
-
+        try {
+            Optional<User> user= userRepository.findById(id);
+            if(user.isEmpty()){
+                throw new NoSuchElementException("No User Found for this Id :"+id);
+            }
+            UserDto userDto = objectMapper.convertValue(user.get(),UserDto.class);
+            return  ResponseEntity.ok().body(userDto);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        catch (Exception ex){
+            logger.error("User Service class get method error : {}",ex.getStackTrace());
+            throw new RuntimeException(ex.getMessage());
+        }
+        
     }
 
     @Override
@@ -65,6 +77,7 @@ public class UserServiceImpl implements IUserService {
         try {
             userCreateDto.setPassword(passwordEncoder.encode(userCreateDto.getPassword()));
             User user = objectMapper.convertValue(userCreateDto, User.class);
+            user.setActive(true);
             Role role =  roleRepository.findByName("ROLE_USER");
             Set<Role> roles = new HashSet<>();
             roles.add(role);
@@ -79,7 +92,7 @@ public class UserServiceImpl implements IUserService {
             throw new Exception(ex);
         }
     }
-    
+
     @Override
     public ResponseEntity<?> userLogin(LoginRequest loginRequest) {
         logger.info("User service class user login method");
