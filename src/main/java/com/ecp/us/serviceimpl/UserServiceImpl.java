@@ -6,6 +6,10 @@ import com.ecp.us.constants.UserConstants;
 import com.ecp.us.dto.LoginRequest;
 import com.ecp.us.dto.UserCreateDto;
 import com.ecp.us.dto.UserDto;
+import com.ecp.us.exceptions.InternalServerErrorException;
+import com.ecp.us.exceptions.InvalidArgumentException;
+import com.ecp.us.exceptions.ResourceNotFoundException;
+import com.ecp.us.exceptions.UnauthorizedException;
 import com.ecp.us.models.Role;
 import com.ecp.us.models.User;
 import com.ecp.us.repository.RoleRepository;
@@ -52,23 +56,23 @@ public class UserServiceImpl implements IUserService {
     private AuthenticationManager authenticationManager;
 
     @Override
-    public ResponseEntity<UserDto> get(Long id) {
+    public ResponseEntity<UserDto> get(Long id)   {
         logger.info("User Service class get method id : {}",id);
         try {
             Optional<User> user= userRepository.findById(id);
             if(user.isEmpty()){
-                throw new NoSuchElementException("No User Found for this Id :"+id);
+                throw new ResourceNotFoundException("No User Found for this Id: "+id);
             }
             UserDto userDto = objectMapper.convertValue(user.get(),UserDto.class);
             return  ResponseEntity.ok().body(userDto);
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException(e.getMessage());
+            throw new InvalidArgumentException(e.getMessage());
         }
         catch (Exception ex){
-            logger.error("User Service class get method error : {}",ex.getStackTrace());
-            throw new RuntimeException(ex.getMessage());
+            logger.error("User Service class get method error : {}",ex.getMessage());
+            throw new InternalServerErrorException(ex.getMessage());
         }
-        
+
     }
 
     @Override
@@ -86,7 +90,7 @@ public class UserServiceImpl implements IUserService {
             URI location = URI.create("/api/users/" + savedUser.getUser_id());
             return ResponseEntity.created(location).body("User created successfully.");
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException(e);
+            throw new InvalidArgumentException(e.getMessage());
         } catch (Exception ex){
             logger.error("User Service class create method error : {}",ex.getMessage());
             throw new Exception(ex);
@@ -94,7 +98,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public ResponseEntity<?> userLogin(LoginRequest loginRequest) {
+    public ResponseEntity<?> userLogin(LoginRequest loginRequest) throws Exception {
         logger.info("User service class user login method");
         Authentication authentication;
         try {
@@ -105,10 +109,11 @@ public class UserServiceImpl implements IUserService {
             return ResponseEntity.ok().body(UserConstants.JWT_TOKEN_PREFIX + jwt_token);
         }
         catch (HttpClientErrorException.Unauthorized ex){
-            return ResponseEntity.status(401).body("Invalid credentials or unauthorized");
+            throw new UnauthorizedException(ex.getMessage());
         }
         catch (Exception ex) {
-            return ResponseEntity.status(500).body("Internal server error: " + ex.getMessage());
+            logger.error("User Service class login method error : {}",ex.getMessage());
+            throw new Exception(ex.getMessage());
         }
     }
 

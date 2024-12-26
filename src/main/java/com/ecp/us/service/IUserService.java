@@ -10,5 +10,5 @@ public interface IUserService {
 
     ResponseEntity<UserDto> get(Long id);
     ResponseEntity<String> create(UserCreateDto userCreateDto) throws Exception;
-    ResponseEntity<?>userLogin(LoginRequest loginRequest);
+    ResponseEntity<?>userLogin(LoginRequest loginRequest) throws Exception;
 }

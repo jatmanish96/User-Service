@@ -4,7 +4,6 @@ import com.ecp.us.controller.IUserController;
 import com.ecp.us.dto.LoginRequest;
 import com.ecp.us.dto.UserCreateDto;
 import com.ecp.us.dto.UserDto;
-import com.ecp.us.models.User;
 import com.ecp.us.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -15,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api")
 @Slf4j
 public class UserControllerImpl implements IUserController {
 
@@ -37,7 +36,7 @@ public class UserControllerImpl implements IUserController {
     }
 
     @Override
-    public ResponseEntity<?> userLogin(LoginRequest loginRequest) {
+    public ResponseEntity<?> userLogin(LoginRequest loginRequest) throws Exception {
         return iUserService.userLogin(loginRequest);
     }
 

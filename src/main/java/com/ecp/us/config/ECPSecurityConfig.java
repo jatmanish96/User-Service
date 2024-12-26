@@ -3,7 +3,6 @@ package com.ecp.us.config;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,14 +27,12 @@ public class ECPSecurityConfig {
 
     public static final Logger logger = LoggerFactory.getLogger(ECPSecurityConfig.class);
 
-
-
     @Bean
-    SecurityFilterChain defaualtSecurityFilterChain(HttpSecurity http) throws Exception{
-        http.csrf(AbstractHttpConfigurer::disable).cors(Customizer.withDefaults()).authorizeHttpRequests((request)->request.requestMatchers("/api/user/auth/login","/api/user/create").permitAll().anyRequest().authenticated());
-        http.sessionManagement(manager->manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+    SecurityFilterChain defaualtSecurityFilterChain(HttpSecurity http) throws Exception {
+        http.csrf(AbstractHttpConfigurer::disable).cors(Customizer.withDefaults()).authorizeHttpRequests((request) -> request.requestMatchers("/api/auth/login", "/api/create").permitAll().anyRequest().authenticated());
+        http.sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.formLogin(AbstractHttpConfigurer::disable);
-        http.addFilterBefore(new JwtTokenValidator(),UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JwtTokenValidator(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
@@ -46,9 +43,9 @@ public class ECPSecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-    AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-    authenticationManagerBuilder.authenticationProvider(daoAuthenticationProvider());
-    return authenticationManagerBuilder.build();
+        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        authenticationManagerBuilder.authenticationProvider(daoAuthenticationProvider());
+        return authenticationManagerBuilder.build();
     }
 
     @Bean
@@ -60,10 +57,9 @@ public class ECPSecurityConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService(){
+    public UserDetailsService userDetailsService() {
         return new CustomUserDetailsService();
     }
-
 
 
 }

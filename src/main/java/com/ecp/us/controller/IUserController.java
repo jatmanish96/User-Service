@@ -18,6 +18,6 @@ public interface IUserController {
     ResponseEntity<UserDto> get(@RequestParam(name = "id")Long id);
 
     @PostMapping("/auth/login")
-    ResponseEntity<?> userLogin(@RequestBody LoginRequest loginRequest);
+    ResponseEntity<?> userLogin(@RequestBody LoginRequest loginRequest) throws Exception;
 
  }
